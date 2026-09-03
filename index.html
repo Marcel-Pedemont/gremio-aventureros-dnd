@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gremio de Aventureros - D&D 5e</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="dark-theme">
+
+    <div class="container">
+        <!-- CABECERA -->
+        <header class="header">
+            <h1 class="guild-title">⚔️ GREMIO DE AVENTUREROS 🔮</h1>
+            <div class="header-right">
+                <div id="user-profile-bar" class="user-profile-bar">
+                    <button id="btn-login" class="btn-login"><i class="fab fa-google"></i> Iniciar sesión</button>
+                </div>
+                <!-- BOTÓN PARA DESPLEGAR EL CHAT GLOBAL LATERAL -->
+                <button class="btn-chat-toggle" onclick="toggleLiveChat()">
+                    <i class="fas fa-comments"></i> Chat en Vivo <span class="badge-online">1</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- NAVEGACIÓN REORDENADA -->
+        <nav class="main-nav">
+            <button class="nav-btn active" onclick="switchMainTab('tab-partida', this)"><i class="fas fa-dragon"></i> Sala de Juego</button>
+            <button class="nav-btn" onclick="switchMainTab('tab-hero', this)"><i class="fas fa-shield-alt"></i> Mi Héroe</button>
+            <button class="nav-btn" onclick="switchMainTab('tab-eventos', this)"><i class="fas fa-calendar-alt"></i> Eventos</button>
+            <button class="nav-btn" onclick="switchMainTab('tab-ranking', this)"><i class="fas fa-trophy"></i> Ranking</button>
+            <button class="nav-btn admin-only" id="nav-btn-admin" style="display:none;" onclick="switchMainTab('tab-admin', this)"><i class="fas fa-crown"></i> Admin</button>
+        </nav>
+
+        <!-- SECCIONES PRINCIPALES -->
+        <main class="main-content">
+
+            <!-- 1° SALA DE JUEGO (NARRACIÓN, ILUSTRACIONES Y DADOS) -->
+            <section id="tab-partida" class="main-tab-content active">
+                <div class="game-layout">
+                    <!-- Columna Izquierda: Chat de la Historia e Ilustración -->
+                    <div class="game-narrative-section">
+                        <!-- PANEL DE ILUSTRACIÓN/ESCENA GENERADA POR EL DM -->
+                        <div class="scene-illustration-box" id="scene-image-container">
+                            <div class="illustration-placeholder">
+                                <i class="fas fa-image fa-3x"></i>
+                                <p>Aquí se mostrarán las ilustraciones de las escenas y lugares generados durante la aventura.</p>
+                            </div>
+                        </div>
+
+                        <!-- CHAT DE AVENTURA CON EL DM -->
+                        <div class="chat-section">
+                            <h3 class="section-title">📜 Registro de la Aventura</h3>
+                            <div id="chat-box" class="chat-box">
+                                <div class="message dm-message">
+                                    <strong>[DM Gemini]:</strong> Bienvenidos a la taberna de Phandalin. El ambiente está lleno de humo y el olor a hidromiel. ¿Qué desea hacer tu personaje?
+                                </div>
+                            </div>
+                            <div class="chat-input-row">
+                                <input type="text" id="user-input" placeholder="Describe tu acción o habla con el DM...">
+                                <button class="btn-gold"><i class="fas fa-paper-plane"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Dados Virtuales -->
+                    <div class="dice-section">
+                        <h3 class="section-title">🎲 Lanza Dados</h3>
+                        <div class="dice-container">
+                            <button class="dice-btn" onclick="rollDice(4)">d4</button>
+                            <button class="dice-btn" onclick="rollDice(6)">d6</button>
+                            <button class="dice-btn" onclick="rollDice(8)">d8</button>
+                            <button class="dice-btn" onclick="rollDice(10)">d10</button>
+                            <button class="dice-btn" onclick="rollDice(12)">d12</button>
+                            <button class="dice-btn btn-d20" onclick="rollDice(20)">d20</button>
+                        </div>
+                        <div class="dice-result" id="diceResult">Lanza un dado...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2° MI HÉROE (GESTIÓN DE HASTA 5 PERSONAJES Y REGULARIZACIÓN D&D 5e) -->
+            <section id="tab-hero" class="main-tab-content">
+                <div class="character-slots-bar">
+                    <span class="slots-label">Mis Personajes (Máx 5):</span>
+                    <button class="slot-btn active" onclick="selectCharacterSlot(1, this)">Slot 1: Marcelmont</button>
+                    <button class="slot-btn empty-slot" onclick="selectCharacterSlot(2, this)">Slot 2: + Crear</button>
+                    <button class="slot-btn empty-slot" onclick="selectCharacterSlot(3, this)">Slot 3: + Crear</button>
+                    <button class="slot-btn empty-slot" onclick="selectCharacterSlot(4, this)">Slot 4: + Crear</button>
+                    <button class="slot-btn empty-slot" onclick="selectCharacterSlot(5, this)">Slot 5: + Crear</button>
+                </div>
+
+                <!-- CONTENEDOR DEL PERSONAJE SELECCIONADO -->
+                <div id="character-slot-view">
+                    <!-- Botón para reiniciar/eliminar según reglas D&D 5e -->
+                    <div class="character-actions-top">
+                        <button class="btn-reset-char" onclick="resetCurrentCharacter()"><i class="fas fa-undo-alt"></i> Restablecer Personaje (Reglas D&D 5e)</button>
+                    </div>
+
+                    <!-- Sub-navegación de la ficha -->
+                    <div class="hero-subnav">
+                        <button class="subnav-btn active" onclick="switchHeroSubTab('hero-stats', this)">⚔️ Atributos & Combate</button>
+                        <button class="subnav-btn" onclick="switchHeroSubTab('hero-spells', this)">✨ Habilidades & Magia</button>
+                        <button class="subnav-btn" onclick="switchHeroSubTab('hero-equipment', this)">🎒 Equipo & Compañero</button>
+                        <button class="subnav-btn" onclick="switchHeroSubTab('hero-journal', this)">📝 Diario de Aventura</button>
+                    </div>
+
+                    <!-- SUB-PESTAÑA COMBATE -->
+                    <div id="hero-stats" class="hero-subtab-content active">
+                        <div class="hero-grid">
+                            <div class="section">
+                                <h3 class="section-title">Estadísticas Base</h3>
+                                <div class="stat-box"><div class="stat-label">FUERZA</div><div class="stat-value">14</div><div class="stat-mod">+2</div></div>
+                                <div class="stat-box"><div class="stat-label">DESTREZA</div><div class="stat-value">10</div><div class="stat-mod">+0</div></div>
+                                <div class="stat-box"><div class="stat-label">CONSTITUCIÓN</div><div class="stat-value">16</div><div class="stat-mod">+3</div></div>
+                                <div class="stat-box"><div class="stat-label">INTELIGENCIA</div><div class="stat-value">13</div><div class="stat-mod">+1</div></div>
+                                <div class="stat-box"><div class="stat-label">SABIDURÍA</div><div class="stat-value">12</div><div class="stat-mod">+1</div></div>
+                                <div class="stat-box"><div class="stat-label">CARISMA</div><div class="stat-value">8</div><div class="stat-mod">-1</div></div>
+                            </div>
+                            <div class="section">
+                                <h3 class="section-title">⚔️ Estado de Combate</h3>
+                                <div class="combat-stat"><span class="combat-label">Puntos de Vida (HP):</span><span class="combat-value">12/12</span></div>
+                                <div class="hp-bar"><div class="hp-fill" style="width: 100%">12/12</div></div>
+                                <div class="combat-stat" style="margin-top:15px;"><span class="combat-label">Clase de Armadura:</span><span class="combat-value">14</span></div>
+                                <div class="combat-stat"><span class="combat-label">Iniciativa:</span><span class="combat-value">+0</span></div>
+                                <div class="combat-stat"><span class="combat-label">Velocidad:</span><span class="combat-value">7.5m</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- VISTAS RESTANTES (Magia, Equipo, Diario) -->
+                    <div id="hero-spells" class="hero-subtab-content">
+                        <div class="section"><h3 class="section-title">🔮 Hechizos y Conjuros</h3><p>Lista de trucos y ranuras de hechizos D&D 5e.</p></div>
+                    </div>
+                    <div id="hero-equipment" class="hero-subtab-content">
+                        <div class="section"><h3 class="section-title">🎒 Equipo e Inventario</h3><p>Mochila, armas y monedas.</p></div>
+                    </div>
+                    <div id="hero-journal" class="hero-subtab-content">
+                        <div class="section"><h3 class="section-title">📝 Notas de Aventura</h3><p>Diario de misiones y pistas.</p></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3° EVENTOS PÚBLICOS -->
+            <section id="tab-eventos" class="main-tab-content">
+                <h2 class="section-title">📅 Eventos y Misiones del Gremio</h2>
+                <div id="events-list" class="events-grid">
+                    <div class="event-card">
+                        <div class="event-badge">Próximamente</div>
+                        <h3 class="event-title">🔥 La Sombra en el Bosque Susurrante</h3>
+                        <p class="event-meta"><i class="fas fa-clock"></i> Sábado 20:00 hs | Nivel Recomendado: 1-3</p>
+                        <p class="event-desc">Criaturas oscuras acechan el bosque. Se buscan aventureros dispuestos a investigar.</p>
+                        <button class="btn-action" id="btn-join-event" onclick="toggleJoinEvent(this)">Unirme al Evento</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4° RANKING -->
+            <section id="tab-ranking" class="main-tab-content">
+                <h2 class="section-title">🏆 Ranking del Gremio</h2>
+                <div id="ranking-container">Cargando clasificación...</div>
+            </section>
+
+            <!-- 5° PANEL DE ADMINISTRACIÓN (SOLO ADMINS) -->
+            <section id="tab-admin" class="main-tab-content">
+                <h2 class="section-title">👑 Panel de Administración</h2>
+                <div class="admin-event-box">
+                    <h3 class="sub-title">Crear Nuevo Evento / Anuncio</h3>
+                    <form id="form-create-event" class="event-form">
+                        <div class="form-group">
+                            <label>Título del Evento</label>
+                            <input type="text" placeholder="Ej: Ataque al Castillo" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Descripción</label>
+                            <textarea rows="3" placeholder="Detalles del evento..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn-gold">Publicar Evento</button>
+                    </form>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- CHAT EN VIVO LATERAL DESPLEGABLE (DRAWER) -->
+    <aside id="live-chat-drawer" class="chat-drawer">
+        <div class="drawer-header">
+            <h3>💬 Chat Global en Vivo</h3>
+            <button class="btn-close-drawer" onclick="toggleLiveChat()">&times;</button>
+        </div>
+        <div class="drawer-notice">
+            <i class="fas fa-info-circle"></i> Los mensajes se borran automáticamente tras 5 horas.
+        </div>
+        <div id="live-chat-messages" class="drawer-chat-box">
+            <div class="chat-item">
+                <span class="chat-user">Aventurero1:</span>
+                <span class="chat-msg">¿Alguien disponible para una misión rápida?</span>
+            </div>
+        </div>
+        <div class="drawer-chat-input">
+            <input type="text" id="live-chat-input" placeholder="Mensaje al gremio...">
+            <button class="btn-gold"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </aside>
+
+    <!-- SCRIPT DE PRUEBA DE INTERFAZ -->
+    <script>
+        function switchMainTab(tabId, btn) {
+            document.querySelectorAll('.main-tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        function switchHeroSubTab(subTabId, btn) {
+            document.querySelectorAll('.hero-subtab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.subnav-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(subTabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        function toggleLiveChat() {
+            document.getElementById('live-chat-drawer').classList.toggle('open');
+        }
+
+        function selectCharacterSlot(slotNum, btn) {
+            document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            alert(`Seleccionaste el Slot de Personaje #${slotNum}`);
+        }
+
+        function resetCurrentCharacter() {
+            if (confirm("¿Deseas restablecer o rehacer este personaje según las reglas de D&D 5e?")) {
+                alert("Personaje restablecido. Puedes volver a tirar atributos o seleccionar clase/raza.");
+            }
+        }
+
+        function toggleJoinEvent(btn) {
+            if (btn.textContent === "Unirme al Evento") {
+                btn.textContent = "✔ Inscripto (Cancelar)";
+                btn.style.background = "#27ae60";
+            } else {
+                btn.textContent = "Unirme al Evento";
+                btn.style.background = "linear-gradient(145deg, #4a0080 0%, #8b00ff 100%)";
+            }
+        }
+
+        function rollDice(sides) {
+            const res = Math.floor(Math.random() * sides) + 1;
+            document.getElementById('diceResult').textContent = `🎲 ${res} (d${sides})`;
+        }
+    </script>
+</body>
+</html>

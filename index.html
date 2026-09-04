@@ -1,51 +1,48 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="cyberpunk">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>D&M The Danger Master-Mont</title>
     
-    <!-- Fuentes Gamer / Futuristas desde Google Fonts -->
+    <!-- Fuentes Synthwave Retro -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Orbitron:wght@500;800&family=Press+Start+2P&family=Rajdhani:wght@600;700&family=Teko:wght@600&display=swap" rel="stylesheet">
-    
-    <!-- Iconos FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;900&family=Press+Start+2P&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Estilos CSS (Carga Directa) -->
-    <link rel="stylesheet" href="css/themes.css">
+    <!-- SDK de Firebase (Compatibilitiy Build para JS Vanila) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-   <header class="global-header">
-    <div class="logo-brand">
-        <span class="brand-title">D&M</span>
-    </div>
-    
-    <!-- Título Central Agregado -->
-    <div class="header-center-title">
-        GREMIO AVENTUREROS D&D
-    </div>
+    <!-- Header Fijo -->
+    <header class="global-header">
+        <div class="logo-brand">D&M</div>
+        <div class="header-center-title">GREMIO AVENTUREROS D&D</div>
+        
+        <!-- Auth con Google / Estado Online -->
+        <div class="header-auth" id="auth-container">
+            <button id="btn-google-login" class="btn-google">
+                <i class="fab fa-google"></i> Iniciar sesión
+            </button>
+            <div id="user-status" class="status-online hidden">
+                <img id="user-avatar" src="" class="user-avatar-mini" alt="Perfil">
+                <span class="status-dot"></span>
+                <span id="user-display-name">ONLINE</span>
+            </div>
+        </div>
+    </header>
 
-    <div class="theme-picker-container">
-        <label for="theme-select"><i class="fas fa-palette"></i> ESTILO:</label>
-        <select id="theme-select" class="theme-dropdown">
-            <option value="cyberpunk">⚡ Cyberpunk 2077</option>
-            <option value="synthwave">🌆 Synthwave Retro</option>
-            <option value="rgb-gamer">🟢 RGB Gamer Pro</option>
-            <option value="void-arcane">🔮 Void Arcane</option>
-            <option value="blood-crimson">🩸 Blood Crimson</option>
-        </select>
-    </div>
-</header>
-
-    <main>
-        <section id="hero-landing" class="hero-section">
+    <main class="main-container">
+        <!-- VISTA 1: PORTADA / HERO -->
+        <section id="hero-landing" class="view-section active">
             <div class="hero-content">
                 <div class="avatar-frame">
-                    <img src="assets/danger-master-avatar.png" alt="The Danger Master-Mont" class="dm-avatar-img" onerror="this.src='https://via.placeholder.com/220/121212/00f3ff?text=D%26M+Master'">
+                    <img src="assets/danger-master-avatar.png" alt="The Danger Master-Mont" class="dm-avatar-img" onerror="this.src='https://via.placeholder.com/170/180e36/f72585?text=D%26M'">
                 </div>
 
                 <h1 class="hero-title">D&M</h1>
@@ -55,10 +52,119 @@
                 <button id="btn-enter-multiverse" class="btn-hero-glow">
                     <i class="fas fa-gamepad"></i> INICIAR TU AVENTURA
                 </button>
+
+                <!-- Mensaje de bloqueo cuando no está autenticado -->
+                <p id="login-warning" class="login-warning-msg hidden">
+                    <i class="fas fa-lock"></i> Debes iniciar sesión con Google arriba para entrar.
+                </p>
             </div>
+        </section>
+
+        <!-- VISTA 2: SELECCIÓN DE SLOTS DE PARTIDA -->
+        <section id="slots-section" class="view-section hidden">
+            <h2 class="slots-main-title">SELECCIONA TU PARTIDA</h2>
+            
+            <div class="slots-grid">
+                <div class="slot-card">
+                    <span class="slot-number">SLOT 01</span>
+                    <i class="fas fa-dragon slot-icon"></i>
+                    <h3>NEON SPIRE</h3>
+                    <p>Nivel 5 • Viernes 20:00</p>
+                    <button class="btn-slot">ENTRAR</button>
+                </div>
+
+                <div class="slot-card">
+                    <span class="slot-number">SLOT 02</span>
+                    <i class="fas fa-skull slot-icon"></i>
+                    <h3>CYBER-RAVENLOFT</h3>
+                    <p>Nivel 8 • Sábados 18:00</p>
+                    <button class="btn-slot">ENTRAR</button>
+                </div>
+
+                <div class="slot-card">
+                    <span class="slot-number">SLOT 03</span>
+                    <i class="fas fa-dungeon slot-icon"></i>
+                    <h3>SHADOWS OF BALDUR</h3>
+                    <p>Nivel 3 • Domingos 16:00</p>
+                    <button class="btn-slot">ENTRAR</button>
+                </div>
+
+                <div class="slot-card">
+                    <span class="slot-number">SLOT 04</span>
+                    <i class="fas fa-meteor slot-icon"></i>
+                    <h3>ASTRAL DRIFT</h3>
+                    <p>Nivel 1 • Miércoles 21:00</p>
+                    <button class="btn-slot">ENTRAR</button>
+                </div>
+
+                <div class="slot-card">
+                    <span class="slot-number">SLOT 05</span>
+                    <i class="fas fa-dice-d20 slot-icon"></i>
+                    <h3>ONE-SHOT ARENA</h3>
+                    <p>Mesa Abierta • Evento</p>
+                    <button class="btn-slot">ENTRAR</button>
+                </div>
+            </div>
+
+            <button id="btn-back-hero" class="btn-back">
+                <i class="fas fa-arrow-left"></i> VOLVER AL INICIO
+            </button>
+        </section>
+
+        <!-- VISTA 3: PANTALLA DE JUEGO / DASHBOARD -->
+        <section id="game-dashboard" class="view-section hidden">
+            <div class="dashboard-nav">
+                <div class="nav-tabs">
+                    <button class="tab-btn" data-tab="sala"><i class="fas fa-dragon"></i> SALA DE JUEGO</button>
+                    <button class="tab-btn" data-tab="heroe"><i class="fas fa-shield-halved"></i> MI HÉROE</button>
+                    <button class="tab-btn" data-tab="eventos"><i class="fas fa-calendar-days"></i> EVENTOS</button>
+                    <button class="tab-btn active" data-tab="ranking"><i class="fas fa-trophy"></i> RANKING</button>
+                </div>
+                <button class="btn-chat-badge">
+                    <i class="fas fa-comments"></i> Chat en Vivo <span class="badge">1</span>
+                </button>
+            </div>
+
+            <div class="dashboard-content">
+                <div id="tab-ranking" class="tab-pane active">
+                    <h3 class="pane-title"><i class="fas fa-trophy"></i> RANKING DEL GREMIO</h3>
+                    <div class="divider-line"></div>
+                    <div class="pane-body">
+                        <p class="loading-text">Cargando clasificación...</p>
+                    </div>
+                </div>
+
+                <div id="tab-sala" class="tab-pane">
+                    <h3 class="pane-title"><i class="fas fa-dragon"></i> SALA DE JUEGO <span id="active-campaign-name" class="highlight-title"></span></h3>
+                    <div class="divider-line"></div>
+                    <div class="pane-body">
+                        <p>Mesa lista. Esperando al Master y Jugadores...</p>
+                    </div>
+                </div>
+
+                <div id="tab-heroe" class="tab-pane">
+                    <h3 class="pane-title"><i class="fas fa-user-shield"></i> FICHA DE PERSONAJE</h3>
+                    <div class="divider-line"></div>
+                    <div class="pane-body">
+                        <p id="user-info-detail">Información del jugador autenticado.</p>
+                    </div>
+                </div>
+
+                <div id="tab-eventos" class="tab-pane">
+                    <h3 class="pane-title"><i class="fas fa-calendar-alt"></i> CALENDARIO DE SESIONES</h3>
+                    <div class="divider-line"></div>
+                    <div class="pane-body">
+                        <p>Próxima partida programada para esta semana.</p>
+                    </div>
+                </div>
+            </div>
+
+            <button id="btn-back-slots" class="btn-back dashboard-back">
+                <i class="fas fa-arrow-left"></i> CAMBIAR DE SLOT
+            </button>
         </section>
     </main>
 
-    <script type="module" src="js/main.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>

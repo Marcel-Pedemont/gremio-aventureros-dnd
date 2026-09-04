@@ -11,9 +11,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;900&family=Press+Start+2P&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- SDK de Firebase (Compatibilitiy Build para JS Vanila) -->
+    <!-- Firebase SDK Compat -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
     <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -24,7 +25,6 @@
         <div class="logo-brand">D&M</div>
         <div class="header-center-title">GREMIO AVENTUREROS D&D</div>
         
-        <!-- Auth con Google / Estado Online -->
         <div class="header-auth" id="auth-container">
             <button id="btn-google-login" class="btn-google">
                 <i class="fab fa-google"></i> Iniciar sesión
@@ -53,7 +53,6 @@
                     <i class="fas fa-gamepad"></i> INICIAR TU AVENTURA
                 </button>
 
-                <!-- Mensaje de bloqueo cuando no está autenticado -->
                 <p id="login-warning" class="login-warning-msg hidden">
                     <i class="fas fa-lock"></i> Debes iniciar sesión con Google arriba para entrar.
                 </p>
@@ -115,47 +114,81 @@
         <section id="game-dashboard" class="view-section hidden">
             <div class="dashboard-nav">
                 <div class="nav-tabs">
-                    <button class="tab-btn" data-tab="sala"><i class="fas fa-dragon"></i> SALA DE JUEGO</button>
+                    <button class="tab-btn active" data-tab="sala"><i class="fas fa-dice-d20"></i> SALA DE JUEGO</button>
                     <button class="tab-btn" data-tab="heroe"><i class="fas fa-shield-halved"></i> MI HÉROE</button>
                     <button class="tab-btn" data-tab="eventos"><i class="fas fa-calendar-days"></i> EVENTOS</button>
-                    <button class="tab-btn active" data-tab="ranking"><i class="fas fa-trophy"></i> RANKING</button>
+                    <button class="tab-btn" data-tab="ranking"><i class="fas fa-trophy"></i> RANKING</button>
                 </div>
-                <button class="btn-chat-badge">
-                    <i class="fas fa-comments"></i> Chat en Vivo <span class="badge">1</span>
+                <button id="btn-chat-toggle" class="btn-chat-badge">
+                    <i class="fas fa-comments"></i> Chat en Vivo <span class="badge" id="chat-count">0</span>
                 </button>
             </div>
 
             <div class="dashboard-content">
-                <div id="tab-ranking" class="tab-pane active">
-                    <h3 class="pane-title"><i class="fas fa-trophy"></i> RANKING DEL GREMIO</h3>
-                    <div class="divider-line"></div>
-                    <div class="pane-body">
-                        <p class="loading-text">Cargando clasificación...</p>
-                    </div>
-                </div>
-
-                <div id="tab-sala" class="tab-pane">
+                <!-- TAB 1: SALA DE JUEGO -->
+                <div id="tab-sala" class="tab-pane active">
                     <h3 class="pane-title"><i class="fas fa-dragon"></i> SALA DE JUEGO <span id="active-campaign-name" class="highlight-title"></span></h3>
                     <div class="divider-line"></div>
-                    <div class="pane-body">
-                        <p>Mesa lista. Esperando al Master y Jugadores...</p>
+                    
+                    <div class="game-room-container">
+                        <div class="dice-box">
+                            <h4><i class="fas fa-dice"></i> LANZADOR DE DADOS</h4>
+                            <div class="dice-buttons">
+                                <button class="btn-dice" data-die="4">d4</button>
+                                <button class="btn-dice" data-die="6">d6</button>
+                                <button class="btn-dice" data-die="8">d8</button>
+                                <button class="btn-dice" data-die="10">d10</button>
+                                <button class="btn-dice" data-die="12">d12</button>
+                                <button class="btn-dice highlight-dice" data-die="20">d20</button>
+                                <button class="btn-dice" data-die="100">d100</button>
+                            </div>
+                            <div id="dice-result-display" class="dice-result">
+                                Presiona un dado para tirar
+                            </div>
+                        </div>
+
+                        <div class="table-info">
+                            <h4>ESTADO DE MESA</h4>
+                            <p> Master: <strong>Danger Master-Mont</strong></p>
+                            <p> Estado: <span class="badge-status">En Espera de Jugadores</span></p>
+                        </div>
                     </div>
                 </div>
 
+                <!-- TAB 2: MI HÉROE -->
                 <div id="tab-heroe" class="tab-pane">
                     <h3 class="pane-title"><i class="fas fa-user-shield"></i> FICHA DE PERSONAJE</h3>
                     <div class="divider-line"></div>
-                    <div class="pane-body">
-                        <p id="user-info-detail">Información del jugador autenticado.</p>
+                    <div class="hero-card-preview">
+                        <img id="hero-profile-pic" src="" alt="Aventurero" class="hero-pic">
+                        <div class="hero-details">
+                            <h4 id="hero-name-val">Cargando héroe...</h4>
+                            <p id="hero-email-val">Email: ---</p>
+                            <div class="hero-stats">
+                                <span><i class="fas fa-heart"></i> HP: 25/25</span>
+                                <span><i class="fas fa-shield"></i> CA: 16</span>
+                                <span><i class="fas fa-bolt"></i> NIVEL: 1</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
+                <!-- TAB 3: EVENTOS -->
                 <div id="tab-eventos" class="tab-pane">
                     <h3 class="pane-title"><i class="fas fa-calendar-alt"></i> CALENDARIO DE SESIONES</h3>
                     <div class="divider-line"></div>
-                    <div class="pane-body">
-                        <p>Próxima partida programada para esta semana.</p>
-                    </div>
+                    <p> Próxima sesión: <strong>Viernes 20:00 hs (Hora Local)</strong></p>
+                </div>
+
+                <!-- TAB 4: RANKING -->
+                <div id="tab-ranking" class="tab-pane">
+                    <h3 class="pane-title"><i class="fas fa-trophy"></i> RANKING DEL GREMIO</h3>
+                    <div class="divider-line"></div>
+                    <ul class="ranking-list">
+                        <li>🥇 <strong>Lord Kaelen</strong> - 1,450 XP</li>
+                        <li>🥈 <strong>Nyx Shadowblade</strong> - 1,200 XP</li>
+                        <li>🥉 <strong>Grumbar el Bárbaro</strong> - 980 XP</li>
+                    </ul>
                 </div>
             </div>
 
@@ -164,6 +197,19 @@
             </button>
         </section>
     </main>
+
+    <!-- VENTANA FLOTANTE DE CHAT EN VIVO -->
+    <div id="chat-drawer" class="chat-drawer hidden">
+        <div class="chat-header">
+            <h3><i class="fas fa-comments"></i> CHAT DEL GREMIO</h3>
+            <button id="btn-close-chat" class="btn-close">&times;</button>
+        </div>
+        <div id="chat-messages" class="chat-messages"></div>
+        <form id="chat-form" class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Escribe tu mensaje..." maxlength="250" required>
+            <button type="submit" class="btn-send"><i class="fas fa-paper-plane"></i></button>
+        </form>
+    </div>
 
     <script src="js/main.js"></script>
 </body>

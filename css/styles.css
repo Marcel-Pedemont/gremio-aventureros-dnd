@@ -1,77 +1,68 @@
-@import url('themes.css');
-
-* {
+*, *::before, *::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-body {
+html, body {
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden; /* Evita el scroll vertical */
     background-color: var(--bg-primary);
     color: var(--text-color);
     font-family: var(--font-family);
-    min-height: 100vh;
-    transition: background-color 0.4s ease, color 0.4s ease;
+    display: flex;
+    flex-direction: column;
 }
 
-/* Barra Superior / Header */
+/* Header Reajustado */
 .global-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 30px;
+    padding: 0 25px;
+    height: 60px;
     background-color: var(--bg-card);
     border-bottom: 2px solid var(--accent-neon);
     box-shadow: var(--border-glow);
-    position: sticky;
-    top: 0;
     z-index: 1000;
+    flex-shrink: 0;
 }
 
-.brand-title {
-    font-size: 1.5rem;
-    font-weight: bold;
+.header-center-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: 2px;
     color: var(--accent-neon);
     text-shadow: 0 0 8px var(--accent-neon);
+    text-transform: uppercase;
+    text-align: center;
 }
 
-.theme-picker-container label {
-    margin-right: 8px;
-    font-size: 0.9rem;
-    color: var(--accent-neon);
-}
-
-.theme-dropdown {
-    background: var(--bg-primary);
-    color: var(--accent-neon);
-    border: 1px solid var(--accent-neon);
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-family: inherit;
-    cursor: pointer;
-    outline: none;
-    box-shadow: var(--border-glow);
-}
-
-/* Portada Principales (Hero) */
+/* Portada Adaptada */
 .hero-section {
+    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding: 60px 20px;
-    min-height: calc(100vh - 80px);
+    padding: 15px;
+    box-sizing: border-box;
 }
 
 .hero-content {
-    max-width: 700px;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
 
 .avatar-frame {
     position: relative;
-    width: 220px;
-    height: 220px;
-    margin: 0 auto 25px;
+    width: 170px;
+    height: 170px;
+    margin: 0 auto;
 }
 
 .dm-avatar-img {
@@ -84,22 +75,23 @@ body {
 }
 
 .hero-title {
-    font-size: 3.5rem;
+    font-size: 2.6rem;
     color: var(--accent-neon);
     text-shadow: 0 0 15px var(--accent-neon);
-    margin-bottom: 5px;
+    margin: 0;
+    line-height: 1;
 }
 
 .hero-subtitle {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     color: var(--accent-secondary);
-    margin-bottom: 15px;
+    margin: 0;
     letter-spacing: 2px;
 }
 
 .hero-tagline {
-    font-size: 1.1rem;
-    margin-bottom: 35px;
+    font-size: 0.95rem;
+    margin: 0;
     opacity: 0.85;
 }
 
@@ -107,18 +99,19 @@ body {
     background: transparent;
     color: var(--accent-neon);
     border: 2px solid var(--accent-neon);
-    padding: 16px 40px;
-    font-size: 1.2rem;
+    padding: 12px 32px;
+    font-size: 1.1rem;
     font-family: inherit;
     font-weight: bold;
     cursor: pointer;
     border-radius: 8px;
     box-shadow: var(--border-glow);
     transition: all 0.3s ease;
+    margin-top: 10px;
 }
 
 .btn-hero-glow:hover {
     background-color: var(--accent-neon);
     color: var(--bg-primary);
-    transform: translateY(-3px) scale(1.03);
+    transform: scale(1.05);
 }

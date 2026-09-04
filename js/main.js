@@ -1,4 +1,4 @@
-// Configuración Real de Firebase
+// Configuración de Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyCcUdHUP-2jeOwMohDxMJwY00Lm2I8SxEU",
     authDomain: "gremio-aventureros-dnd.firebaseapp.com",
@@ -9,7 +9,7 @@ const firebaseConfig = {
     measurementId: "G-WKVS37B8J7"
 };
 
-// Inicializar Servicios
+// Inicialización de Servicios
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
@@ -18,23 +18,18 @@ const googleProvider = new firebase.auth.GoogleAuthProvider();
 let currentUser = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Vistas y Navegación
-    const btnEnter = document.getElementById('btn-enter-multiverse');
-    const btnBackHero = document.getElementById('btn-back-hero');
-    const btnBackSlots = document.getElementById('btn-back-slots');
+    // Vistas Principal
     const heroSection = document.getElementById('hero-landing');
     const slotsSection = document.getElementById('slots-section');
     const gameDashboard = document.getElementById('game-dashboard');
-    const activeCampaignName = document.getElementById('active-campaign-name');
-    const loginWarning = document.getElementById('login-warning');
-
+    
     // Auth UI
     const btnGoogleLogin = document.getElementById('btn-google-login');
     const userStatus = document.getElementById('user-status');
     const userAvatar = document.getElementById('user-avatar');
     const userDisplayName = document.getElementById('user-display-name');
 
-    // Chat UI
+    // Chat Drawer
     const chatDrawer = document.getElementById('chat-drawer');
     const btnChatToggle = document.getElementById('btn-chat-toggle');
     const btnCloseChat = document.getElementById('btn-close-chat');
@@ -42,25 +37,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatInput = document.getElementById('chat-input');
     const chatMessages = document.getElementById('chat-messages');
 
+    // AI Master Terminal
+    const aiStoryLog = document.getElementById('ai-story-log');
+    const aiActionForm = document.getElementById('ai-action-form');
+    const aiUserAction = document.getElementById('ai-user-action');
+
     // Tabs
     const tabBtns = document.querySelectorAll('.tab-btn');
     const tabPanes = document.querySelectorAll('.tab-pane');
 
-    // 1. ESCUCHADOR DE SESIÓN CON GOOGLE
-    auth.onAuthStateChanged((user) => {
+    // 1. AUTENTICACIÓN CON GOOGLE Y REGISTRO EN FIRESTORE
+    auth.onAuthStateChanged(async (user) => {
         if (user) {
             currentUser = user;
-            loginWarning.classList.add('hidden');
+            document.getElementById('login-warning').classList.add('hidden');
             btnGoogleLogin.classList.add('hidden');
             userStatus.classList.remove('hidden');
 
-            userAvatar.src = user.photoURL || 'https://via.placeholder.com/26';
+            userAvatar.src = user.photoURL || 'https://via.placeholder.com/30';
             userDisplayName.innerText = `${user.displayName ? user.displayName.split(' ')[0].toUpperCase() : 'JUGADOR'} (ONLINE)`;
 
-            // Cargar datos en Mi Héroe
-            document.getElementById('hero-profile-pic').src = user.photoURL || '';
-            document.getElementById('hero-name-val').innerText = user.displayName || 'Aventurero';
-            document.getElementById('hero-email-val').innerText = `Email: ${user.email}`;
+            // Guardar o actualizar usuario en Firestore para Ranking
+            await db.collection('users').doc(user.uid).set({
+                displayName: user.displayName,
+                email: user.email,
+                photoURL: user.photoURL,
+                lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+
+            // Cargar Ficha de Personaje
+            updateDndSheetUI(user);
+            loadGuildRanking();
         } else {
             currentUser = null;
             userStatus.classList.add('hidden');
@@ -68,110 +75,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Login Event
     btnGoogleLogin.addEventListener('click', async () => {
         try {
             await auth.signInWithPopup(googleProvider);
-        } catch (error) {
-            console.error("Error Auth:", error);
-            alert("No se pudo iniciar sesión con Google.");
+        } catch (err) {
+            console.error("Error Auth:", err);
         }
     });
 
-    // Logout Event
-    userStatus.addEventListener('click', async () => {
-        if (confirm("¿Deseas salir del Gremio?")) {
-            await auth.signOut();
-            gameDashboard.classList.replace('active', 'hidden');
-            slotsSection.classList.replace('active', 'hidden');
-            heroSection.classList.replace('hidden', 'active');
-        }
-    });
-
-    // 2. BLOQUEO EN PORTADA SI NO HAY SESIÓN
-    btnEnter.addEventListener('click', () => {
+    // 2. ENTRAR A LA AVENTURA
+    document.getElementById('btn-enter-multiverse').addEventListener('click', () => {
         if (!currentUser) {
-            loginWarning.classList.remove('hidden');
-            btnGoogleLogin.classList.add('pulse-glow');
-            setTimeout(() => btnGoogleLogin.classList.remove('pulse-glow'), 1500);
+            document.getElementById('login-warning').classList.remove('hidden');
             return;
         }
         heroSection.classList.replace('active', 'hidden');
         slotsSection.classList.replace('hidden', 'active');
     });
 
-    // 3. CHAT EN TIEMPO REAL CON FIRESTORE
-    btnChatToggle.addEventListener('click', () => {
-        if (!currentUser) {
-            alert("Inicia sesión para abrir el chat.");
-            return;
-        }
-        chatDrawer.classList.toggle('hidden');
-    });
-
-    btnCloseChat.addEventListener('click', () => chatDrawer.classList.add('hidden'));
-
-    db.collection('global_chat')
-        .orderBy('timestamp', 'asc')
-        .limitToLast(40)
-        .onSnapshot(snapshot => {
-            chatMessages.innerHTML = '';
-            document.getElementById('chat-count').innerText = snapshot.size;
-
-            snapshot.forEach(doc => {
-                const msg = doc.data();
-                const isMe = currentUser && currentUser.email === msg.email;
-
-                const msgDiv = document.createElement('div');
-                msgDiv.className = `chat-msg ${isMe ? 'my-msg' : 'other-msg'}`;
-                msgDiv.innerHTML = `
-                    <span class="msg-user">${isMe ? 'TÚ' : msg.userName}</span>
-                    <div class="msg-text">${msg.text}</div>
-                `;
-                chatMessages.appendChild(msgDiv);
-            });
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        });
-
-    chatForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const text = chatInput.value.trim();
-        if (!text || !currentUser) return;
-
-        try {
-            await db.collection('global_chat').add({
-                userName: currentUser.displayName ? currentUser.displayName.split(' ')[0] : 'Aventurero',
-                email: currentUser.email,
-                text: text,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            chatInput.value = '';
-        } catch (err) {
-            console.error("Error envío chat:", err);
-        }
-    });
-
-    // 4. LANZADOR DE DADOS EN SALA DE JUEGO
-    const diceBtns = document.querySelectorAll('.btn-dice');
-    const diceDisplay = document.getElementById('dice-result-display');
-
-    diceBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const sides = parseInt(btn.getAttribute('data-die'));
-            const result = Math.floor(Math.random() * sides) + 1;
-            
-            diceDisplay.innerHTML = `🎲 Has tirado d${sides}: <strong class="die-val">${result}</strong>`;
-            
-            if (sides === 20 && result === 20) {
-                diceDisplay.innerHTML += ` <span class="crit-text">¡CRÍTICO NATURAL! 🎉</span>`;
-            } else if (sides === 20 && result === 1) {
-                diceDisplay.innerHTML += ` <span class="pifia-text">¡PIFIA FATAL! 💀</span>`;
-            }
-        });
-    });
-
-    // 5. NAVEGACIÓN Y TABS
-    btnBackHero.addEventListener('click', () => {
+    document.getElementById('btn-back-hero').addEventListener('click', () => {
         slotsSection.classList.replace('active', 'hidden');
         heroSection.classList.replace('hidden', 'active');
     });
@@ -181,23 +103,171 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = e.target.closest('.slot-card');
             const title = card.querySelector('h3').innerText;
 
-            activeCampaignName.innerText = `[ ${title} ]`;
+            document.getElementById('active-campaign-name').innerText = `[ MESA: ${title} ]`;
             slotsSection.classList.replace('active', 'hidden');
             gameDashboard.classList.replace('hidden', 'active');
         });
     });
 
-    btnBackSlots.addEventListener('click', () => {
+    document.getElementById('btn-back-slots').addEventListener('click', () => {
         gameDashboard.classList.replace('active', 'hidden');
         slotsSection.classList.replace('hidden', 'active');
     });
 
+    // 3. SISTEMA DE CHAT CON LA IA (DANGER MASTER)
+    aiActionForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const actionText = aiUserAction.value.trim();
+        if (!actionText) return;
+
+        // Renderizar acción del usuario
+        appendStoryMsg('TÚ (Jugador)', actionText, true);
+        aiUserAction.value = '';
+
+        // Simular respuesta narrativa asincrónica del Danger Master
+        setTimeout(() => {
+            const responses = [
+                `Danger Master-Mont procesa tu acción... "${actionText}". El entorno reacciona. Realiza una tirada de d20 para determinar si tienes éxito.`,
+                `Escuchas un eco ressonar en las paredes mientras ejecutas tu movimiento. Danger Master-Mont registra tu avance en la bitácora de campaña.`,
+                `¡Un desafío se presenta! Por favor presiona el botón d20 abajo para añadir la tirada a tu acción.`
+            ];
+            const randomReply = responses[Math.floor(Math.random() * responses.length)];
+            appendStoryMsg('Danger Master-Mont (IA)', randomReply, false);
+        }, 1000);
+    });
+
+    // Tirador de Dados Tactil Integrado
+    document.querySelectorAll('.btn-quick-die').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const sides = parseInt(btn.getAttribute('data-die'));
+            const roll = Math.floor(Math.random() * sides) + 1;
+            const diceMsg = `🎲 Ha tirado d${sides}. Resultado: [ ${roll} ]`;
+            
+            appendStoryMsg('TIRADA DE DADO', diceMsg, true);
+            
+            setTimeout(() => {
+                if (sides === 20 && roll === 20) {
+                    appendStoryMsg('Danger Master-Mont (IA)', '¡CRÍTICO NATURAL! 🎉 Logras un éxito deslumbrante en tu acción.', false);
+                } else if (sides === 20 && roll === 1) {
+                    appendStoryMsg('Danger Master-Mont (IA)', '¡PIFIA FATAL! 💀 Ocurre una complicación inesperada.', false);
+                }
+            }, 800);
+        });
+    });
+
+    function appendStoryMsg(author, text, isUser) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `ai-msg ${isUser ? 'user-action' : ''}`;
+        msgDiv.innerHTML = `
+            <div class="ai-author">${isUser ? '⚔️' : '🤖'} ${author}:</div>
+            <div class="ai-text">${text}</div>
+        `;
+        aiStoryLog.appendChild(msgDiv);
+        aiStoryLog.scrollTop = aiStoryLog.scrollHeight;
+    }
+
+    // 4. GENERADOR Y FICHA D&D 5E
+    function updateDndSheetUI(user) {
+        document.getElementById('hero-profile-pic').src = user.photoURL || '';
+        document.getElementById('sheet-char-name').innerText = user.displayName || 'Aventurero';
+        document.getElementById('sheet-player-email').innerText = `Jugador: ${user.email}`;
+    }
+
+    document.getElementById('btn-autogen-hero').addEventListener('click', () => {
+        const classes = ['Guerrero', 'Mago', 'Pícaro', 'Clérigo', 'Bárbaro'];
+        const races = ['Humano', 'Elfo', 'Enano', 'Mediano', 'Tiefling'];
+        
+        const randomClass = classes[Math.floor(Math.random() * classes.length)];
+        const randomRace = races[Math.floor(Math.random() * races.length)];
+
+        document.getElementById('val-class').innerText = `${randomClass} Nivel 1`;
+        document.getElementById('val-race').innerText = randomRace;
+
+        // Stats aleatorios d20 / 5e style
+        ['str', 'dex', 'con', 'int', 'wis', 'cha'].forEach(stat => {
+            const score = Math.floor(Math.random() * 8) + 10;
+            const mod = Math.floor((score - 10) / 2);
+            document.getElementById(`score-${stat}`).innerText = score;
+            document.getElementById(`mod-${stat}`).innerText = mod >= 0 ? `+${mod}` : mod;
+        });
+
+        alert("¡Ficha re-generada automáticamente con reglas D&D 5e!");
+    });
+
+    // 5. RANKING CON USUARIOS Y FOTOS REALES DE GOOGLE
+    async function loadGuildRanking() {
+        const rankingList = document.getElementById('ranking-list');
+        rankingList.innerHTML = '';
+
+        try {
+            const snapshot = await db.collection('users').get();
+            let index = 1;
+            snapshot.forEach(doc => {
+                const u = doc.data();
+                const item = document.createElement('div');
+                item.className = 'ranking-item';
+                item.innerHTML = `
+                    <div class="ranking-user-info">
+                        <span class="ranking-xp">#${index}</span>
+                        <img src="${u.photoURL || 'https://via.placeholder.com/40'}" class="ranking-avatar" alt="User">
+                        <div>
+                            <strong>${u.displayName || 'Aventurero'}</strong>
+                            <div style="font-size:0.8rem; color: var(--text-muted);">${u.email}</div>
+                        </div>
+                    </div>
+                    <span class="ranking-xp">1,250 XP</span>
+                `;
+                rankingList.appendChild(item);
+                index++;
+            });
+        } catch (err) {
+            console.error("Error ranking:", err);
+        }
+    }
+
+    // 6. CHAT GLOBAL ENTRE JUGADORES
+    btnChatToggle.addEventListener('click', () => chatDrawer.classList.toggle('hidden'));
+    btnCloseChat.addEventListener('click', () => chatDrawer.classList.add('hidden'));
+
+    db.collection('global_chat').orderBy('timestamp', 'asc').limitToLast(30).onSnapshot(snapshot => {
+        chatMessages.innerHTML = '';
+        document.getElementById('chat-count').innerText = snapshot.size;
+        snapshot.forEach(doc => {
+            const msg = doc.data();
+            const row = document.createElement('div');
+            row.className = 'chat-msg-row';
+            row.innerHTML = `
+                <img src="${msg.photoURL || 'https://via.placeholder.com/28'}" class="chat-msg-avatar">
+                <div class="chat-msg-body">
+                    <div class="msg-user-name">${msg.userName}</div>
+                    <div class="msg-bubble">${msg.text}</div>
+                </div>
+            `;
+            chatMessages.appendChild(row);
+        });
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
+
+    chatForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const text = chatInput.value.trim();
+        if (!text || !currentUser) return;
+
+        await db.collection('global_chat').add({
+            userName: currentUser.displayName ? currentUser.displayName.split(' ')[0] : 'Aventurero',
+            photoURL: currentUser.photoURL,
+            text: text,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        chatInput.value = '';
+    });
+
+    // Cambios de Pestañas
     tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const tabId = btn.getAttribute('data-tab');
             tabBtns.forEach(b => b.classList.remove('active'));
             tabPanes.forEach(p => p.classList.remove('active'));
-
             btn.classList.add('active');
             document.getElementById(`tab-${tabId}`).classList.add('active');
         });

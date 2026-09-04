@@ -8,7 +8,7 @@
     <!-- Fuentes Synthwave Retro -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;900&family=Press+Start+2P&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Firebase SDK Compat -->
@@ -20,9 +20,9 @@
 </head>
 <body>
 
-    <!-- Header Fijo -->
+    <!-- Header Fijo Pantalla Completa -->
     <header class="global-header">
-        <div class="logo-brand">D&M</div>
+        <div class="logo-brand"><i class="fas fa-dice-d20"></i> D&M</div>
         <div class="header-center-title">GREMIO AVENTUREROS D&D</div>
         
         <div class="header-auth" id="auth-container">
@@ -37,7 +37,7 @@
         </div>
     </header>
 
-    <main class="main-container">
+    <main class="main-fullscreen">
         <!-- VISTA 1: PORTADA / HERO -->
         <section id="hero-landing" class="view-section active">
             <div class="hero-content">
@@ -47,158 +47,206 @@
 
                 <h1 class="hero-title">D&M</h1>
                 <h2 class="hero-subtitle">THE DANGER MASTER-MONT</h2>
-                <p class="hero-tagline">Entra al Multiverso de Rol Neofuturista</p>
+                <p class="hero-tagline">Multiverso de Rol Asincrónico guiado por IA</p>
 
                 <button id="btn-enter-multiverse" class="btn-hero-glow">
                     <i class="fas fa-gamepad"></i> INICIAR TU AVENTURA
                 </button>
 
                 <p id="login-warning" class="login-warning-msg hidden">
-                    <i class="fas fa-lock"></i> Debes iniciar sesión con Google arriba para entrar.
+                    <i class="fas fa-lock"></i> Debes iniciar sesión con Google para acceder.
                 </p>
             </div>
         </section>
 
-        <!-- VISTA 2: SELECCIÓN DE SLOTS DE PARTIDA -->
+        <!-- VISTA 2: SELECCIÓN DE SLOTS DE PARTIDA (GRIDA REFLUIDA Y LIMPIA) -->
         <section id="slots-section" class="view-section hidden">
-            <h2 class="slots-main-title">SELECCIONA TU PARTIDA</h2>
+            <h2 class="section-title">SELECCIONA TU PARTIDA</h2>
             
             <div class="slots-grid">
-                <div class="slot-card">
-                    <span class="slot-number">SLOT 01</span>
-                    <i class="fas fa-dragon slot-icon"></i>
+                <div class="slot-card" data-slot="1">
+                    <div class="slot-header">
+                        <span class="slot-badge">SLOT 01</span>
+                        <i class="fas fa-dragon slot-icon"></i>
+                    </div>
                     <h3>NEON SPIRE</h3>
-                    <p>Nivel 5 • Viernes 20:00</p>
-                    <button class="btn-slot">ENTRAR</button>
+                    <p class="slot-desc">Cyber-Dungeon Crawl • Nivel 5</p>
+                    <button class="btn-slot">ENTRAR A LA MESA</button>
                 </div>
 
-                <div class="slot-card">
-                    <span class="slot-number">SLOT 02</span>
-                    <i class="fas fa-skull slot-icon"></i>
+                <div class="slot-card" data-slot="2">
+                    <div class="slot-header">
+                        <span class="slot-badge">SLOT 02</span>
+                        <i class="fas fa-skull slot-icon"></i>
+                    </div>
                     <h3>CYBER-RAVENLOFT</h3>
-                    <p>Nivel 8 • Sábados 18:00</p>
-                    <button class="btn-slot">ENTRAR</button>
+                    <p class="slot-desc">Gótico Futurista • Nivel 8</p>
+                    <button class="btn-slot">ENTRAR A LA MESA</button>
                 </div>
 
-                <div class="slot-card">
-                    <span class="slot-number">SLOT 03</span>
-                    <i class="fas fa-dungeon slot-icon"></i>
+                <div class="slot-card" data-slot="3">
+                    <div class="slot-header">
+                        <span class="slot-badge">SLOT 03</span>
+                        <i class="fas fa-dungeon slot-icon"></i>
+                    </div>
                     <h3>SHADOWS OF BALDUR</h3>
-                    <p>Nivel 3 • Domingos 16:00</p>
-                    <button class="btn-slot">ENTRAR</button>
+                    <p class="slot-desc">Fantasía Oscura • Nivel 3</p>
+                    <button class="btn-slot">ENTRAR A LA MESA</button>
                 </div>
 
-                <div class="slot-card">
-                    <span class="slot-number">SLOT 04</span>
-                    <i class="fas fa-meteor slot-icon"></i>
+                <div class="slot-card" data-slot="4">
+                    <div class="slot-header">
+                        <span class="slot-badge">SLOT 04</span>
+                        <i class="fas fa-meteor slot-icon"></i>
+                    </div>
                     <h3>ASTRAL DRIFT</h3>
-                    <p>Nivel 1 • Miércoles 21:00</p>
-                    <button class="btn-slot">ENTRAR</button>
+                    <p class="slot-desc">Navegación Astral • Nivel 1</p>
+                    <button class="btn-slot">ENTRAR A LA MESA</button>
                 </div>
 
-                <div class="slot-card">
-                    <span class="slot-number">SLOT 05</span>
-                    <i class="fas fa-dice-d20 slot-icon"></i>
+                <div class="slot-card" data-slot="5">
+                    <div class="slot-header">
+                        <span class="slot-badge">SLOT 05</span>
+                        <i class="fas fa-mask slot-icon"></i>
+                    </div>
                     <h3>ONE-SHOT ARENA</h3>
-                    <p>Mesa Abierta • Evento</p>
-                    <button class="btn-slot">ENTRAR</button>
+                    <p class="slot-desc">Mesa Abierta • Evento Diario</p>
+                    <button class="btn-slot">ENTRAR A LA MESA</button>
                 </div>
             </div>
 
-            <button id="btn-back-hero" class="btn-back">
-                <i class="fas fa-arrow-left"></i> VOLVER AL INICIO
+            <button id="btn-back-hero" class="btn-back-simple">
+                <i class="fas fa-arrow-left"></i> Volver al Inicio
             </button>
         </section>
 
-        <!-- VISTA 3: PANTALLA DE JUEGO / DASHBOARD -->
+        <!-- VISTA 3: PANTALLA COMPLETA DE JUEGO (DASHBOARD SIN MARCOS) -->
         <section id="game-dashboard" class="view-section hidden">
-            <div class="dashboard-nav">
+            <nav class="dashboard-nav-full">
                 <div class="nav-tabs">
-                    <button class="tab-btn active" data-tab="sala"><i class="fas fa-dice-d20"></i> SALA DE JUEGO</button>
-                    <button class="tab-btn" data-tab="heroe"><i class="fas fa-shield-halved"></i> MI HÉROE</button>
-                    <button class="tab-btn" data-tab="eventos"><i class="fas fa-calendar-days"></i> EVENTOS</button>
-                    <button class="tab-btn" data-tab="ranking"><i class="fas fa-trophy"></i> RANKING</button>
+                    <button class="tab-btn active" data-tab="sala"><i class="fas fa-robot"></i> MESA CON IA MASTER</button>
+                    <button class="tab-btn" data-tab="heroe"><i class="fas fa-scroll"></i> FICHA D&D 5E</button>
+                    <button class="tab-btn" data-tab="ranking"><i class="fas fa-trophy"></i> RANKING DE JUGADORES</button>
                 </div>
-                <button id="btn-chat-toggle" class="btn-chat-badge">
-                    <i class="fas fa-comments"></i> Chat en Vivo <span class="badge" id="chat-count">0</span>
-                </button>
-            </div>
+                <div class="nav-controls">
+                    <button id="btn-chat-toggle" class="btn-chat-badge">
+                        <i class="fas fa-users"></i> Chat Global <span class="badge" id="chat-count">0</span>
+                    </button>
+                    <button id="btn-back-slots" class="btn-exit-slot"><i class="fas fa-door-open"></i> Salir de Mesa</button>
+                </div>
+            </nav>
 
-            <div class="dashboard-content">
-                <!-- TAB 1: SALA DE JUEGO -->
+            <div class="dashboard-viewport">
+                <!-- TAB 1: SALA DE JUEGO ASINCRÓNICA CON GEMINI DANGER MASTER -->
                 <div id="tab-sala" class="tab-pane active">
-                    <h3 class="pane-title"><i class="fas fa-dragon"></i> SALA DE JUEGO <span id="active-campaign-name" class="highlight-title"></span></h3>
-                    <div class="divider-line"></div>
-                    
-                    <div class="game-room-container">
-                        <div class="dice-box">
-                            <h4><i class="fas fa-dice"></i> LANZADOR DE DADOS</h4>
-                            <div class="dice-buttons">
-                                <button class="btn-dice" data-die="4">d4</button>
-                                <button class="btn-dice" data-die="6">d6</button>
-                                <button class="btn-dice" data-die="8">d8</button>
-                                <button class="btn-dice" data-die="10">d10</button>
-                                <button class="btn-dice" data-die="12">d12</button>
-                                <button class="btn-dice highlight-dice" data-die="20">d20</button>
-                                <button class="btn-dice" data-die="100">d100</button>
+                    <div class="dm-layout-container">
+                        <!-- Consola de Historia Asincrónica -->
+                        <div class="ai-dm-terminal">
+                            <div class="terminal-header">
+                                <span><i class="fas fa-brain"></i> DANGER MASTER-MONT (IA MASTER)</span>
+                                <span id="active-campaign-name" class="campaign-tag">MESA ACTIVA</span>
                             </div>
-                            <div id="dice-result-display" class="dice-result">
-                                Presiona un dado para tirar
-                            </div>
-                        </div>
 
-                        <div class="table-info">
-                            <h4>ESTADO DE MESA</h4>
-                            <p> Master: <strong>Danger Master-Mont</strong></p>
-                            <p> Estado: <span class="badge-status">En Espera de Jugadores</span></p>
+                            <div id="ai-story-log" class="ai-story-log">
+                                <div class="ai-msg">
+                                    <div class="ai-author"><i class="fas fa-robot"></i> Danger Master-Mont:</div>
+                                    <div class="ai-text">
+                                        Saludos, aventurero. Has ingresado a la mesa asincrónica. Describe las acciones de tu personaje en cualquier momento. Yo interpretaré el mundo, solicitaré tiradas de dados y avanzaré la narrativa.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Barra Integrada de Lanza-Dados Tactil -->
+                            <div class="dice-bar-integrated">
+                                <span class="dice-label"><i class="fas fa-dice-d20"></i> TIRAR DADO:</span>
+                                <div class="dice-btn-group">
+                                    <button class="btn-quick-die" data-die="4">d4</button>
+                                    <button class="btn-quick-die" data-die="6">d6</button>
+                                    <button class="btn-quick-die" data-die="8">d8</button>
+                                    <button class="btn-quick-die" data-die="10">d10</button>
+                                    <button class="btn-quick-die" data-die="12">d12</button>
+                                    <button class="btn-quick-die highlight-d20" data-die="20">d20</button>
+                                    <button class="btn-quick-die" data-die="100">d100</button>
+                                </div>
+                            </div>
+
+                            <!-- Entrada de Acción para la IA -->
+                            <form id="ai-action-form" class="ai-input-bar">
+                                <input type="text" id="ai-user-action" placeholder="Describe tu acción (Ej: Intento forzar la puerta de acero o tiro Sigilo)..." autocomplete="off" required>
+                                <button type="submit" class="btn-send-action"><i class="fas fa-paper-plane"></i> ENVIAR ACCIÓN</button>
+                            </form>
                         </div>
                     </div>
                 </div>
 
-                <!-- TAB 2: MI HÉROE -->
+                <!-- TAB 2: FICHA DE PERSONAJE D&D 5E COMPLETA -->
                 <div id="tab-heroe" class="tab-pane">
-                    <h3 class="pane-title"><i class="fas fa-user-shield"></i> FICHA DE PERSONAJE</h3>
-                    <div class="divider-line"></div>
-                    <div class="hero-card-preview">
-                        <img id="hero-profile-pic" src="" alt="Aventurero" class="hero-pic">
-                        <div class="hero-details">
-                            <h4 id="hero-name-val">Cargando héroe...</h4>
-                            <p id="hero-email-val">Email: ---</p>
-                            <div class="hero-stats">
-                                <span><i class="fas fa-heart"></i> HP: 25/25</span>
-                                <span><i class="fas fa-shield"></i> CA: 16</span>
-                                <span><i class="fas fa-bolt"></i> NIVEL: 1</span>
+                    <div class="dnd-sheet-container">
+                        <div class="sheet-header">
+                            <div class="player-identity">
+                                <img id="hero-profile-pic" src="" alt="Google User" class="dnd-avatar">
+                                <div>
+                                    <h2 id="sheet-char-name">Cargando Nombre...</h2>
+                                    <span id="sheet-player-email" class="sheet-sub">Jugador: --</span>
+                                </div>
+                            </div>
+                            <button id="btn-autogen-hero" class="btn-autogen"><i class="fas fa-wand-magic-sparkles"></i> Auto-Generar con IA</button>
+                        </div>
+
+                        <!-- Atributos Principales D&D 5E -->
+                        <div class="stats-grid-5e">
+                            <div class="stat-box"><span class="stat-label">FUERZA</span><span id="score-str" class="stat-value">10</span><span id="mod-str" class="stat-mod">+0</span></div>
+                            <div class="stat-box"><span class="stat-label">DESTREZA</span><span id="score-dex" class="stat-value">10</span><span id="mod-dex" class="stat-mod">+0</span></div>
+                            <div class="stat-box"><span class="stat-label">CONSTITUCIÓN</span><span id="score-con" class="stat-value">10</span><span id="mod-con" class="stat-mod">+0</span></div>
+                            <div class="stat-box"><span class="stat-label">INTELIGENCIA</span><span id="score-int" class="stat-value">10</span><span id="mod-int" class="stat-mod">+0</span></div>
+                            <div class="stat-box"><span class="stat-label">SABIDURÍA</span><span id="score-wis" class="stat-value">10</span><span id="mod-wis" class="stat-mod">+0</span></div>
+                            <div class="stat-box"><span class="stat-label">CARISMA</span><span id="score-cha" class="stat-value">10</span><span id="mod-cha" class="stat-mod">+0</span></div>
+                        </div>
+
+                        <!-- Vitales D&D -->
+                        <div class="vitals-row">
+                            <div class="vital-card"><i class="fas fa-heart"></i> <span>PUNTOS DE VIDA</span> <strong id="val-hp">22 / 22</strong></div>
+                            <div class="vital-card"><i class="fas fa-shield-halved"></i> <span>CLASE DE ARMADURA</span> <strong id="val-ac">15</strong></div>
+                            <div class="vital-card"><i class="fas fa-bolt"></i> <span>INICIATIVA</span> <strong id="val-init">+2</strong></div>
+                            <div class="vital-card"><i class="fas fa-graduation-cap"></i> <span>COMPETENCIA</span> <strong>+2</strong></div>
+                        </div>
+
+                        <!-- Detalles de Clase y Puntos de Experiencia -->
+                        <div class="sheet-details-grid">
+                            <div class="detail-panel">
+                                <h3><i class="fas fa-id-card"></i> DETALLES DEL PERSONAJE</h3>
+                                <p><strong>Clase & Nivel:</strong> <span id="val-class">Guerrero Nivel 1</span></p>
+                                <p><strong>Raza:</strong> <span id="val-race">Humano</span></p>
+                                <p><strong>Trasfondo:</strong> <span id="val-background">Soldado</span></p>
+                            </div>
+                            <div class="detail-panel">
+                                <h3><i class="fas fa-box-open"></i> EQUIPAMIENTO DE INICIO</h3>
+                                <ul id="val-equipment">
+                                    <li>Espada Larga (1d8 cortante)</li>
+                                    <li>Cota de Malla (CA 16)</li>
+                                    <li>Mochila de Aventurero y 15 PO</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- TAB 3: EVENTOS -->
-                <div id="tab-eventos" class="tab-pane">
-                    <h3 class="pane-title"><i class="fas fa-calendar-alt"></i> CALENDARIO DE SESIONES</h3>
-                    <div class="divider-line"></div>
-                    <p> Próxima sesión: <strong>Viernes 20:00 hs (Hora Local)</strong></p>
-                </div>
-
-                <!-- TAB 4: RANKING -->
+                <!-- TAB 3: RANKING DE JUGADORES CON FOTOS DE GOOGLE -->
                 <div id="tab-ranking" class="tab-pane">
-                    <h3 class="pane-title"><i class="fas fa-trophy"></i> RANKING DEL GREMIO</h3>
-                    <div class="divider-line"></div>
-                    <ul class="ranking-list">
-                        <li>🥇 <strong>Lord Kaelen</strong> - 1,450 XP</li>
-                        <li>🥈 <strong>Nyx Shadowblade</strong> - 1,200 XP</li>
-                        <li>🥉 <strong>Grumbar el Bárbaro</strong> - 980 XP</li>
-                    </ul>
+                    <div class="ranking-container">
+                        <h2><i class="fas fa-trophy"></i> TABLA DE CLASIFICACIÓN DEL GREMIO</h2>
+                        <p class="ranking-sub">Calculado por participaciones e interacción en campañas asincrónicas</p>
+                        
+                        <div id="ranking-list" class="ranking-list">
+                            <!-- Se renderiza dinámicamente con las cuentas reales -->
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <button id="btn-back-slots" class="btn-back dashboard-back">
-                <i class="fas fa-arrow-left"></i> CAMBIAR DE SLOT
-            </button>
         </section>
     </main>
 
-    <!-- VENTANA FLOTANTE DE CHAT EN VIVO -->
+    <!-- VENTANA FLOTANTE CHAT GLOBAL ENTRE JUGADORES -->
     <div id="chat-drawer" class="chat-drawer hidden">
         <div class="chat-header">
             <h3><i class="fas fa-comments"></i> CHAT DEL GREMIO</h3>
@@ -206,7 +254,7 @@
         </div>
         <div id="chat-messages" class="chat-messages"></div>
         <form id="chat-form" class="chat-input-area">
-            <input type="text" id="chat-input" placeholder="Escribe tu mensaje..." maxlength="250" required>
+            <input type="text" id="chat-input" placeholder="Escribe un mensaje al gremio..." maxlength="250" required>
             <button type="submit" class="btn-send"><i class="fas fa-paper-plane"></i></button>
         </form>
     </div>

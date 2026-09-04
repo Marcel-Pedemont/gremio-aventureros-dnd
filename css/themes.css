@@ -1,0 +1,54 @@
+/* Tema 1: Cyberpunk 2077 (Predeterminado) */
+:root[data-theme="cyberpunk"], :root {
+    --bg-primary: #0d0f12;
+    --bg-card: #161b22;
+    --accent-neon: #00f3ff;
+    --accent-secondary: #ff0055;
+    --text-color: #ffffff;
+    --font-family: 'Orbitron', sans-serif;
+    --border-glow: 0 0 15px rgba(0, 243, 255, 0.6);
+}
+
+/* Tema 2: Synthwave Retro */
+:root[data-theme="synthwave"] {
+    --bg-primary: #0a051b;
+    --bg-card: #180e36;
+    --accent-neon: #f72585;
+    --accent-secondary: #7209b7;
+    --text-color: #ffffff;
+    --font-family: 'Press Start 2P', cursive;
+    --border-glow: 0 0 15px rgba(247, 37, 133, 0.6);
+}
+
+/* Tema 3: RGB Gamer Pro */
+:root[data-theme="rgb-gamer"] {
+    --bg-primary: #121212;
+    --bg-card: #1e1e24;
+    --accent-neon: #00ff66;
+    --accent-secondary: #00b4d8;
+    --text-color: #e0e0e0;
+    --font-family: 'Rajdhani', sans-serif;
+    --border-glow: 0 0 15px rgba(0, 255, 102, 0.6);
+}
+
+/* Tema 4: Void Arcane */
+:root[data-theme="void-arcane"] {
+    --bg-primary: #08080a;
+    --bg-card: #12131c;
+    --accent-neon: #48cae4;
+    --accent-secondary: #ffd166;
+    --text-color: #f1f2f6;
+    --font-family: 'Cinzel Decorative', serif;
+    --border-glow: 0 0 18px rgba(72, 202, 228, 0.6);
+}
+
+/* Tema 5: Blood Crimson */
+:root[data-theme="blood-crimson"] {
+    --bg-primary: #0f0204;
+    --bg-card: #1c0509;
+    --accent-neon: #e63946;
+    --accent-secondary: #ffb703;
+    --text-color: #f8f9fa;
+    --font-family: 'Teko', sans-serif;
+    --border-glow: 0 0 15px rgba(230, 57, 70, 0.6);
+}
